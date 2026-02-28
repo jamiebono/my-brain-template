@@ -94,12 +94,12 @@ logs/
   quarterly/                # Quarterly reviews (YYYY-QN.md)
   maintenance/              # Auto-generated vault health reports (YYYY-MM-DD-maintenance.md)
 
-Assets/                     # Images and media files
-Excalidraw/                 # Diagrams and drawings
-Recordings/                 # Audio recordings
-Transcripts/                # Meeting transcripts
+scripts/                    # Setup and utility scripts
+  setup.sh                  # CLI vault personalization wizard
 utils/                      # Utility scripts and tools
   md_to_docx.py             # Markdown to branded Word converter
+  quarto-filters/           # Quarto rendering filters
+config/                     # Tool configuration files
 ```
 
 ## Template System

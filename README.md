@@ -6,7 +6,7 @@ tags:
 - '#documentation'
 status: active
 created_date: 2025-11-12
-last_updated: 2025-11-26
+last_updated: 2026-02-28
 permalink: readme
 ---
 
@@ -121,49 +121,81 @@ After running `/setup`:
 ```
 my-brain/
 ├── .claude/
-│   ├── agents/                    # AI agent definitions
+│   ├── agents/                    # AI agent definitions (6 agents)
 │   │   ├── strategic-advisor.md
 │   │   ├── meeting-maestro.md
 │   │   ├── relationship-manager.md
 │   │   ├── vault-organizer.md
 │   │   ├── editorial-agent.md
 │   │   └── pragmatist-agent.md
-│   ├── commands/                  # Slash commands
-│   │   ├── daily.md
-│   │   ├── weekly.md
-│   │   ├── network.md
-│   │   ├── outreach.md
-│   │   ├── push.md
-│   │   └── administrator.md
+│   ├── commands/                  # Slash commands (15 commands)
+│   │   ├── setup.md              # First-time personalization wizard
+│   │   ├── daily.md              # Daily strategic brief
+│   │   ├── weekly.md             # Weekly review
+│   │   ├── briefing.md           # Meeting/person/company briefings
+│   │   ├── outreach.md           # Outreach message drafting
+│   │   ├── push.md               # Auto-commit and push
+│   │   ├── time.md               # Time tracking
+│   │   ├── status.md             # Client status reports
+│   │   ├── health.md             # Vault health check
+│   │   ├── onboarding.md         # Client/project onboarding
+│   │   ├── transcript.md         # Transcript processing
+│   │   ├── digest.md             # Catch-up summary
+│   │   ├── proposal.md           # SOW/proposal generator
+│   │   ├── retro.md              # Project retrospective
+│   │   └── personalize.md        # Update personalization settings
+│   ├── instructions/              # Processing instructions
+│   ├── skills/                    # Conversational skills (3 skills)
+│   │   ├── de-ai-ify/
+│   │   ├── linkedin-post/
+│   │   └── thinking-partner/
 │   └── settings.local.json        # Claude Code permissions
-├── .vscode/
-│   └── mcp.json                   # MCP server configuration
 ├── Projects/
 │   ├── Clients/                   # Client project hierarchy
 │   │   └── [Client-Name]/
 │   │       ├── client-overview.md
 │   │       └── [project-name]/
 │   │           ├── project-brief.md
-│   │           └── YYYY-MM-DD-*.md
+│   │           ├── project_TODO.md
+│   │           ├── email/in/      # Incoming emails
+│   │           ├── email/out/     # Outbound drafts
+│   │           └── meetings/      # Meeting notes & transcripts
 │   └── Internal/                  # Internal projects
-├── templates/                     # Obsidian Templater templates
+├── templates/                     # Obsidian Templater templates (15+)
 │   ├── snippets/                  # Reusable template fragments
+│   ├── example-client-template/   # Example project hierarchy
+│   ├── quarto-brand/              # Branded document generation
+│   │   ├── themes/brand-theme.scss
+│   │   ├── assets/                # Logo, reference DOCX
+│   │   └── templates/             # QMD templates
 │   ├── tpl-daily-brief.md
 │   ├── tpl-weekly-review.md
 │   ├── tpl-meeting.md
-│   └── ... (other templates)
+│   └── ... (15 templates total)
+├── network/                       # Individual contact files
+│   └── example-person.md          # Example contact format
 ├── logs/
-│   ├── daily/                     # Daily briefs (YYYY-MM-DD-daily-brief.md)
-│   ├── weekly/                    # Weekly reviews (YYYY-WW.md)
-│   └── quarterly/                 # Quarterly reviews
-├── Transcripts/                   # Meeting transcripts
-├── Recordings/                    # Audio/video recordings
-├── Excalidraw/                    # Visual diagrams
+│   ├── daily/                     # Daily briefs
+│   ├── weekly/                    # Weekly reviews
+│   ├── quarterly/                 # Quarterly reviews
+│   ├── eod/                       # End-of-day logs
+│   ├── meetings/                  # Meeting logs
+│   └── maintenance/               # Vault health reports
+├── scripts/
+│   └── setup.sh                   # CLI setup wizard (non-Claude alternative)
+├── utils/
+│   ├── md_to_docx.py              # Markdown → branded Word converter
+│   └── quarto-filters/            # Quarto rendering filters
+├── config/                        # Tool configuration files
+├── .mcp.json.example              # MCP server template (copy to .mcp.json)
 ├── todo.md                        # Central task tracking
 ├── roadmap.md                     # Strategic milestones
-├── network.md                     # Professional contacts
+├── network.md                     # Professional contacts (Dataview index)
 ├── outreach.md                    # Outreach tracking
-├── CLAUDE.md                      # AI context file
+├── recurring-tasks.md             # Recurring task patterns
+├── agent-handoff-log.md           # Agent coordination context
+├── CLAUDE.md                      # AI context file (the "brain")
+├── CLAUDE.local.md                # Supplemental context
 └── README.md                      # This file
 ```
 
@@ -210,59 +242,52 @@ Notes: Relationship context, what they're working on, how you can help each othe
 
 ## Slash Commands
 
-Slash commands are AI prompts that execute specific workflows. Run them by typing the command in Claude Code.
+Slash commands are AI prompts that execute specific workflows. Run them by typing the command in Claude Code (e.g., `/daily`).
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `/daily` | Generate strategic daily brief | Start of each day |
-| `/weekly` | Comprehensive weekly review | End of week (Friday/Sunday) |
-| `/network` | Search contacts for current needs | When you need help from your network |
-| `/outreach` | Draft outreach messages | When reaching out to contacts |
-| `/push` | Auto-commit and push changes | After making updates |
-| `/administrator` | Full chief-of-staff review | When you need comprehensive support |
+### Setup & Configuration
 
-### /daily
+| Command | Purpose |
+|---------|---------|
+| `/setup` | First-time vault personalization wizard (name, org, colors, MCP) |
+| `/personalize` | Update specific settings: `colors`, `agents`, `mcp`, `branding`, `identity` |
 
-The daily command reads your `todo.md`, `roadmap.md`, calendar events, and recent activity to produce:
-- Today's calendar overview
-- State of affairs summary
-- Key opportunities
-- Blockers and friction points
+### Daily Operations
+
+| Command | Purpose |
+|---------|---------|
+| `/daily` | Strategic daily brief with priorities, blockers, and ONE THING. Modes: `--quick`, `standup` |
+| `/weekly` | 7-phase weekly review: mechanical → emotional → constraints → unlocks → priorities → evolution → outputs |
+| `/push` | Auto-commit and push changes with generated commit message |
+| `/digest` | "What did I miss?" catch-up summary from emails and calendar |
+| `/time` | Time tracking reconciliation and reporting |
+| `/health` | Vault health check — broken links, orphan notes, stale files |
+
+### Client & Project Work
+
+| Command | Purpose |
+|---------|---------|
+| `/briefing` | Professional briefings: meetings, people, companies, topics, projects. Flags: `--sales`, `--disc` |
+| `/outreach` | Draft and manage outreach messages with strategic guidance |
+| `/onboarding` | Client/project onboarding — creates folder structure and initial docs |
+| `/status` | Weekly client status report across active projects |
+| `/proposal` | SOW/proposal generator mining vault for context |
+| `/transcript` | Process meeting transcripts into structured notes with action items |
+| `/retro` | Project retrospective — what worked, what didn't, lessons learned |
+
+### Command Details
+
+**`/daily`** reads `todo.md`, `roadmap.md`, calendar events, and recent activity to produce:
+- Today's calendar overview and state of affairs
+- Key opportunities and blockers
 - ONE THING: Your single highest-leverage action
-- Today's prioritized action list
+- Prioritized action list
 
-### /weekly
+**`/weekly`** runs a multi-phase strategic review:
+1. Mechanical Review → 2. Emotional Reality Check → 3. Constraint Analysis → 4. Finding Unlocks → 5. Energy-Aware Priorities → 6. Evolution Tracking → 7. Outputs to `roadmap.md`, `todo.md`, weekly log
 
-A multi-phase strategic review:
-1. **Mechanical Review**: Git changes, task completion, deadline tracking
-2. **Emotional Reality Check**: What's causing unease? What brought energy?
-3. **Constraint Analysis**: Money, time, energy, reputation assessment
-4. **Finding Unlocks**: Collaboration opportunities, reframing
-5. **Energy-Aware Priorities**: Next week's priorities with energy management
-6. **Evolution Tracking**: Patterns and insights
-7. **Outputs**: Updates to `roadmap.md`, `todo.md`, and weekly log
+**`/briefing`** generates branded PDF/HTML/DOCX briefing documents using the Quarto pipeline. Auto-detects briefing type (meeting, person, company, topic, project) or specify with `--type`.
 
-### /network
-
-Searches your professional network based on current priorities:
-1. Reads `todo.md` and `roadmap.md` to understand needs
-2. Updates `network.md` with new contacts from emails/calendar
-3. Returns tiered matches (Perfect, Strong, Potential)
-
-### /outreach
-
-Assists with outreach strategy and message drafting:
-- Reviews priorities and network
-- Suggests who to reach out to
-- Drafts message notes (not full emails unless requested)
-- Follows effective outreach principles
-
-### /push
-
-Automated git workflow:
-1. Checks `git status` and `git diff`
-2. Generates descriptive commit message
-3. Stages all changes, commits, and pushes
+**`/push`** checks `git status` and `git diff`, generates a descriptive commit message, stages, commits, and pushes
 
 ---
 
@@ -331,14 +356,20 @@ Templates live in `templates/` and use Obsidian's Templater plugin syntax.
 | Template | Purpose | Output Location |
 |----------|---------|-----------------|
 | `tpl-daily-brief` | Daily strategic planning | `logs/daily/` |
+| `tpl-daily-standup` | Quick async standup format | `logs/daily/` |
 | `tpl-weekly-review` | 7-phase weekly reflection | `logs/weekly/` |
 | `tpl-quarterly-review` | Strategic quarterly planning | `logs/quarterly/` |
 | `tpl-meeting` | General meeting capture | Project folder |
+| `tpl-quick-meeting` | Rapid lightweight meeting notes | Project folder |
 | `tpl-discovery-session` | Client discovery calls | Client project folder |
 | `tpl-1on1` | 1:1 meetings | Appropriate folder |
 | `tpl-client-overview` | New client setup | `Projects/Clients/[Client]/` |
 | `tpl-project-brief` | New project setup | Project folder |
-| `tpl-person` | Important contact profiles | Root or People folder |
+| `tpl-project-todo` | Project-specific task tracking | Project folder |
+| `tpl-sow-proposal` | SOW/proposal document | Project folder |
+| `tpl-status-report` | Client status report | Project folder |
+| `tpl-person` | Detailed contact profile | `network/` |
+| `tpl-person-light` | Lightweight contact profile | `network/` |
 
 ### Snippets
 
@@ -447,7 +478,7 @@ Use Obsidian wiki-style links: `[[filename]]` or `[[filename|display text]]`
 
 Add backlinks at the top of documents:
 ```markdown
-**See also:** [[todo]], [[roadmap]], [[project-overview]]
+**See also:** [[todo]], [[roadmap]], [[network]]
 ```
 
 ### Footer
@@ -460,69 +491,80 @@ Include at the bottom of every document:
 **Last Updated:** YYYY-MM-DD
 ```
 
-### Common Tags
+### Tag Taxonomy
 
-`#meetings` `#consulting` `#todos` `#projects` `#notes` `#weekly-review` `#daily-brief`
+| Category | Tags |
+|----------|------|
+| **Document Type** | `#meeting`, `#project`, `#todo`, `#note` |
+| **Work Type** | `#consulting`, `#internal` |
+| **Technology** | `#ai`, `#data`, `#bi`, `#sharepoint`, `#security` |
+| **Client** | `#client/[name]` (e.g., `#client/acme-corp`) |
+| **Project** | `#project/[name]` (e.g., `#project/data-platform-migration`) |
 
 ---
 
 ## VSCode & Git Integration
 
-### GitDoc Auto-Commit
+### GitDoc Auto-Commit (Optional)
 
-The workspace is configured with GitDoc for automatic version control:
-- Commits on save
-- Smart commit enabled
-- Auto-sync after commit
+For automatic version control, configure VSCode with GitDoc:
+- Install the GitDoc extension
+- Commits on save, smart commit, auto-sync after commit
 
-**Workspace Settings (`my-brain.code-workspace`):**
+**Recommended `.vscode/settings.json`:**
 ```json
 {
-  "settings": {
-    "gitdoc.enabled": true,
-    "git.enableSmartCommit": true,
-    "git.postCommitCommand": "sync"
-  }
+  "gitdoc.enabled": true,
+  "git.enableSmartCommit": true,
+  "git.postCommitCommand": "sync",
+  "files.autoSave": "onFocusChange"
 }
 ```
 
 ### Claude Code Permissions
 
 Local permissions are configured in `.claude/settings.local.json`:
-- Allowed slash commands
+- Allowed slash commands and bash operations
 - Permitted git operations
-- MCP server access
 - Web search capability
+- Add MCP server access as needed
 
 ---
 
 ## MCP Configuration
 
-Model Context Protocol (MCP) servers extend Claude's capabilities. Configure in `.vscode/mcp.json`.
+Model Context Protocol (MCP) servers extend Claude's capabilities. Configuration lives in `.mcp.json` at the vault root.
 
-### Available Integrations
+### Setup
 
-| Integration | Purpose |
-|-------------|---------|
-| Asana | Task management sync |
-| Obsidian MCP | Direct vault access |
-| Calendar | Calendar integration |
-| Email | Email context |
+1. Copy the example config: `cp .mcp.json.example .mcp.json`
+2. Or run `/setup` which configures MCP servers interactively
 
-### Current Configuration
+### Included Integrations
 
-The MCP configuration is available for custom server definitions. Add servers as needed:
+| Server | Purpose | Command |
+|--------|---------|---------|
+| **basic-memory** | Cross-session memory — indexes your vault as source of truth | `uvx basic-memory mcp` |
+| **filesystem** | Batch file reads, directory trees, advanced file management | `npx -y @anthropic/mcp-filesystem` |
+| **markitdown** | Convert DOCX, PDF, PPTX to clean markdown | `uvx markitdown-mcp` |
+
+### Adding More Servers
+
+Edit `.mcp.json` to add servers. Common additions include GitHub, Asana, calendar integrations:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "server-name": {
-      "command": "...",
-      "args": ["..."]
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@package/name"]
     }
   }
 }
 ```
+
+Use `/personalize mcp` to reconfigure servers interactively.
 
 ---
 
@@ -652,15 +694,7 @@ After Meeting:
 
 ## Contributing
 
-This is a personal productivity system, but the patterns and templates can be adapted for team use.
-
-### Sharing with Team Members
-
-1. Fork this repository
-2. Customize templates for team needs
-3. Remove personal content
-4. Document team-specific conventions
-5. Set up shared MCP integrations
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on submitting issues, feature requests, and pull requests.
 
 ---
 
@@ -673,7 +707,7 @@ Based on the ["Feed the Beast"](https://dtlarson.com/feed-the-beast) pattern by 
 **See also:** [[todo]], [[roadmap]], [[network]], [[CLAUDE]]
 
 **Created:** 2025-11-12
-**Last Updated:** 2025-11-26
+**Last Updated:** 2026-02-28
 **Template by:** [Jamie Bono](https://github.com/jamiebono)
 
 

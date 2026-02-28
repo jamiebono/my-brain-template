@@ -28,7 +28,7 @@ These permissions allow Claude to work autonomously without constant approval pr
 - `git.postCommitCommand: "sync"`
 - Autosave on focus change
 
-**MCP Configuration** (`.vscode/mcp.json`):
+**MCP Configuration** (`.mcp.json` at vault root, copy from `.mcp.json.example`):
 
 Active MCP servers extending Claude's capabilities:
 

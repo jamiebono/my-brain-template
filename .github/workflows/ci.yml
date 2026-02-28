@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run markdownlint
+        uses: articulate/actions-markdownlint@v1
+        with:
+          config: .markdownlint.json
+          files: '**/*.md'
+
+  link-check:
+    name: Link Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: '.markdown-link-check.json'
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'no'
+
+  validate-structure:
+    name: Validate Repository Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          echo "Checking for required core files..."
+          required_files=(
+            "README.md"
+            "todo.md"
+            "roadmap.md"
+            "network.md"
+            "outreach.md"
+            ".github/copilot-instructions.md"
+            "templates"
+            "Projects"
+            "logs"
+          )
+
+          missing_files=()
+          for file in "${required_files[@]}"; do
+            if [ ! -e "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+
+          if [ ${#missing_files[@]} -eq 0 ]; then
+            echo "✅ All required files and directories are present"
+          else
+            echo "❌ Missing required files/directories:"
+            printf '%s\n' "${missing_files[@]}"
+            exit 1
+          fi
+
+      - name: Validate frontmatter in templates
+        run: |
+          echo "Checking templates have proper frontmatter..."
+          template_count=0
+          invalid_templates=()
+
+          for template in templates/*.md; do
+            if [ -f "$template" ]; then
+              template_count=$((template_count + 1))
+              if ! head -1 "$template" | grep -q "^---$"; then
+                invalid_templates+=("$template")
+              fi
+            fi
+          done
+
+          if [ ${#invalid_templates[@]} -eq 0 ]; then
+            echo "✅ All $template_count templates have valid frontmatter"
+          else
+            echo "⚠️  Templates without frontmatter:"
+            printf '%s\n' "${invalid_templates[@]}"
+          fi

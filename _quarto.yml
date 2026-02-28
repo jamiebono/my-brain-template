@@ -1,0 +1,28 @@
+# Vault-level Quarto Configuration
+# Applies to any .qmd file rendered from this vault
+#
+# MERMAID HANDLING:
+# Quarto has BUILT-IN mermaid support via ```{mermaid} code fences.
+# Do NOT inject external CDN mermaid scripts -- they conflict with
+# Quarto's embedded renderer and break embed-resources (self-contained) mode.
+#
+# For HTML: Quarto embeds mermaid JS and renders client-side automatically.
+# For PDF:  Quarto uses Chromium to convert mermaid to PNG (requires chromium).
+# For DOCX: Use the mermaid-to-image Lua filter below.
+#
+# If a subdirectory needs to override this config, create a local _quarto.yml
+# in that directory with `project: type: default` to claim the project root.
+
+format:
+  html:
+    toc: true
+
+  pdf:
+    papersize: us-letter
+    filters:
+      - utils/quarto-filters/mermaid-to-image.lua
+
+  docx:
+    toc: true
+    filters:
+      - utils/quarto-filters/mermaid-to-image.lua

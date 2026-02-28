@@ -1,0 +1,76 @@
+# .claudeignore - Exclude noise from Claude Code context
+# These patterns prevent Claude from indexing irrelevant files during codebase exploration
+
+# === Large Binary/Media Files ===
+Recordings/
+Assets/
+*.webm
+*.mp4
+*.mp3
+*.wav
+*.m4a
+*.mov
+*.avi
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.docx
+*.xlsx
+*.pptx
+
+# === Obsidian App Configuration ===
+# Plugin binaries, cache, workspace state - not useful for AI work
+.obsidian/plugins/
+.obsidian/workspace*
+.obsidian/cache
+.obsidian/graph.json
+.obsidian/app.json
+
+# === Smart Connections Embeddings ===
+# Large JSON blob files from semantic indexing - AI has its own context
+.smart-env/
+
+# === VS Code Foam Extension ===
+.foam/
+
+# === Obsidian Trash ===
+.trash/
+
+# === Python/Virtual Environments ===
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+utils/.venv/
+
+# === OS Generated Files ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === Personal Notes ===
+# Explicitly private content
+personal/
+
+# === Web Clippings ===
+# Imported content, less relevant to project work
+Clippings/
+
+# === Git Internals ===
+.git/
+
+# === Node Modules (if any) ===
+node_modules/
+
+# === Temporary/Import Folders ===
+Raindrop Import/
+
+# === Files to KEEP (not ignored) ===
+# .claude/           - Claude Code configuration (essential)
+# templates/         - Document templates (important patterns)
+# Projects/          - Core project work
+# email_and_calendar_context/  - Strategic context
+# logs/              - Reviews and briefs
+# .github/           - GitHub Copilot/Actions configuration

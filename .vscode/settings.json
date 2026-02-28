@@ -1,0 +1,55 @@
+{
+  "quarto.path": "",
+  "files.autoSave": "onFocusChange",
+  "editor.minimap.enabled": true,
+  "editor.wrappingIndent": "indent",
+  "editor.overviewRulerBorder": false,
+  "editor.lineHeight": 24,
+  "foam.edit.linkReferenceDefinitions": "withExtensions",
+  "[markdown]": {
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": false
+    }
+  },
+  "git.enableSmartCommit": true,
+  "git.postCommitCommand": "sync",
+  "files.exclude": {
+    "_site/**": true
+  },
+  "files.insertFinalNewline": true,
+  "markdown.styles": [
+    ".vscode/custom-tag-style.css"
+  ],
+  "workbench.colorCustomizations": {},
+  "gitdoc.enabled": true,
+  "modifyTimestamps.enable": true,
+  "modifyTimestamps.modifiedTime": {
+    "format": "YYYY-MM-DD",
+    "template": "Last Update: {time}"
+  },
+  "markdown.marp.chromePath": "",
+  "markdown.marp.exportType": "pptx",
+  "cSpell.words": [
+    "Aleron",
+    "Culligan",
+    "FNDW",
+    "Gandour",
+    "Gullo",
+    "Hussak",
+    "O'Keefe",
+    "Oddo",
+    "PMPM",
+    "procs",
+    "timesheet",
+    "Twitchell"
+  ],
+  "terminal.integrated.profiles.windows": {
+    "zsh (WSL)": {
+      "path": "wsl.exe",
+      "args": ["-d", "Ubuntu-24.04", "--", "zsh", "-l"]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "zsh (WSL)"
+}

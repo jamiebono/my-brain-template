@@ -1,0 +1,105 @@
+---
+title: "Meeting Briefing"
+subtitle: "{{MEETING_TITLE}}"
+author: "Prepared by Your Organization"
+date: today
+format:
+  pdf:
+    toc: false
+    colorlinks: true
+  html:
+    toc: true
+    theme:
+      - default
+      - ../themes/brand-theme.scss
+  docx:
+    toc: false
+---
+
+<!--
+TEMPLATE: Meeting Briefing
+Usage: Copy this template and fill in the sections below.
+       Replace {{PLACEHOLDERS}} with actual values.
+
+To render: quarto render your-briefing.qmd --to pdf
+           quarto render your-briefing.qmd --to html
+           quarto render your-briefing.qmd --to docx
+           quarto render your-briefing.qmd  # renders all formats
+-->
+
+# {{CONTACT_NAME}}
+
+::: {.callout-info}
+## Quick Facts
+**Role:** {{ROLE}}\
+**Company:** {{COMPANY}}\
+**Location:** {{LOCATION}}\
+**Email:** {{EMAIL}}\
+**LinkedIn:** [{{LINKEDIN_TEXT}}]({{LINKEDIN_URL}})
+:::
+
+## Meeting Details
+
+| Field | Value |
+|:------|:------|
+| **Meeting** | {{MEETING_TITLE}} |
+| **Date/Time** | {{DATE_TIME}} |
+| **Duration** | {{DURATION}} |
+| **Platform** | {{PLATFORM}} |
+| **Attendees** | {{ATTENDEES}} |
+
+## Background
+
+{{BACKGROUND_SUMMARY}}
+
+### Key Experience
+
+{{KEY_EXPERIENCE_BULLETS}}
+
+### Relevant Expertise
+
+| Area | Details |
+|:-----|:--------|
+| {{EXPERTISE_1}} | {{EXPERTISE_1_DETAIL}} |
+| {{EXPERTISE_2}} | {{EXPERTISE_2_DETAIL}} |
+| {{EXPERTISE_3}} | {{EXPERTISE_3_DETAIL}} |
+
+## Why This Meeting?
+
+::: {.callout-highlight}
+## Context
+
+{{MEETING_CONTEXT}}
+
+:::
+
+## Conversation Hooks
+
+### 1. {{HOOK_1_TITLE}}
+
+{{HOOK_1_DETAIL}}
+
+### 2. {{HOOK_2_TITLE}}
+
+{{HOOK_2_DETAIL}}
+
+### 3. {{HOOK_3_TITLE}}
+
+{{HOOK_3_DETAIL}}
+
+## Strategic Notes
+
+::: {.callout-warning}
+## Important Reminders
+
+{{STRATEGIC_REMINDERS}}
+
+:::
+
+## Research Sources
+
+{{SOURCES_LIST}}
+
+---
+
+*Briefing prepared by Your Organization | [your-organization.com](https://your-organization.com)*

@@ -1,0 +1,549 @@
+name: Vault Health Check
+
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  health-check:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout vault
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for staleness checks
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Check orphan notes
+        id: orphans
+        run: |
+          echo "## Orphan Notes Check" >> $GITHUB_STEP_SUMMARY
+          python << 'EOF'
+          import os
+          import re
+          from pathlib import Path
+
+          vault_path = Path('.')
+          exclude_dirs = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode'}
+
+          # Collect all markdown files
+          md_files = {}
+          for f in vault_path.rglob('*.md'):
+              if not any(part in exclude_dirs for part in f.parts):
+                  md_files[f.stem.lower()] = f
+
+          # Find all wiki-links
+          link_pattern = re.compile(r'\[\[([^\]|]+)(?:\|[^\]]+)?\]\]')
+          linked = set()
+
+          for f in md_files.values():
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  matches = link_pattern.findall(content)
+                  for m in matches:
+                      linked.add(m.lower().split('/')[-1])
+              except:
+                  pass
+
+          # Find orphans (no incoming links, not in special dirs)
+          orphans = []
+          for name, path in md_files.items():
+              if name not in linked and 'template' not in str(path).lower():
+                  orphans.append(str(path))
+
+          if orphans:
+              print(f"Found {len(orphans)} orphan notes:")
+              for o in orphans[:20]:  # Limit output
+                  print(f"  - {o}")
+              if len(orphans) > 20:
+                  print(f"  ... and {len(orphans) - 20} more")
+          else:
+              print("No orphan notes found!")
+          EOF
+
+      - name: Validate frontmatter
+        id: frontmatter
+        run: |
+          echo "## Frontmatter Validation" >> $GITHUB_STEP_SUMMARY
+          python << 'EOF'
+          import os
+          import re
+          from pathlib import Path
+
+          vault_path = Path('.')
+          exclude_dirs = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode', 'templates'}
+
+          issues = []
+          frontmatter_pattern = re.compile(r'^---\n(.*?)\n---', re.DOTALL)
+
+          for f in vault_path.rglob('*.md'):
+              if any(part in exclude_dirs for part in f.parts):
+                  continue
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  match = frontmatter_pattern.match(content)
+                  if not match and 'Projects/' in str(f):
+                      issues.append(f"Missing frontmatter: {f}")
+              except:
+                  pass
+
+          if issues:
+              print(f"Found {len(issues)} frontmatter issues:")
+              for i in issues[:20]:
+                  print(f"  - {i}")
+          else:
+              print("All project files have frontmatter!")
+          EOF
+
+      - name: Check stale contacts
+        id: stale
+        run: |
+          echo "## Stale Contacts Check" >> $GITHUB_STEP_SUMMARY
+          python << 'EOF'
+          import re
+          from datetime import datetime
+          from pathlib import Path
+
+          network_dir = Path('network')
+          if not network_dir.exists():
+              print("network/ directory not found")
+              exit(0)
+
+          today = datetime.now()
+          stale_90 = []  # Critical
+          stale_60 = []  # Warning
+
+          for f in sorted(network_dir.glob('*.md')):
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  if not content.startswith('---'):
+                      continue
+                  end = content.find('---', 3)
+                  if end == -1:
+                      continue
+                  fm_text = content[3:end]
+                  # Simple regex extraction (avoids yaml dependency issues)
+                  date_match = re.search(r'last_contact:\s*(\d{4}-\d{2}-\d{2})', fm_text)
+                  status_match = re.search(r'status:\s*(\w+)', fm_text)
+                  status = status_match.group(1) if status_match else 'active'
+                  if status != 'active':
+                      continue
+                  if date_match:
+                      last_contact = datetime.strptime(date_match.group(1), '%Y-%m-%d')
+                      days = (today - last_contact).days
+                      name = f.stem.replace('-', ' ').title()
+                      if days > 90:
+                          stale_90.append((name, days))
+                      elif days > 60:
+                          stale_60.append((name, days))
+              except Exception:
+                  pass
+
+          if stale_90:
+              print(f"CRITICAL - {len(stale_90)} contacts >90 days stale:")
+              for name, days in stale_90[:10]:
+                  print(f"  - {name} ({days} days)")
+
+          if stale_60:
+              print(f"WARNING - {len(stale_60)} contacts 60-90 days stale:")
+              for name, days in stale_60[:10]:
+                  print(f"  - {name} ({days} days)")
+
+          if not stale_90 and not stale_60:
+              print("All contacts are fresh!")
+          EOF
+
+      - name: Check tag standards
+        id: tags
+        run: |
+          echo "## Tag Standards Check" >> $GITHUB_STEP_SUMMARY
+          python << 'EOF'
+          import re
+          from pathlib import Path
+
+          vault_path = Path('.')
+          exclude_dirs = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode'}
+
+          # Standard: lowercase, hyphenated
+          tag_pattern = re.compile(r'#([a-zA-Z0-9_-]+)')
+          non_standard = set()
+
+          for f in vault_path.rglob('*.md'):
+              if any(part in exclude_dirs for part in f.parts):
+                  continue
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  tags = tag_pattern.findall(content)
+                  for tag in tags:
+                      # Check if tag is lowercase and hyphenated (no underscores, no caps)
+                      if tag != tag.lower() or '_' in tag:
+                          non_standard.add(tag)
+              except:
+                  pass
+
+          if non_standard:
+              print(f"Found {len(non_standard)} non-standard tags:")
+              for t in sorted(non_standard)[:20]:
+                  print(f"  - #{t}")
+          else:
+              print("All tags follow standards!")
+          EOF
+
+      - name: Auto-fix tag casing
+        run: |
+          echo "## Auto-Fix: Tag Casing" >> $GITHUB_STEP_SUMMARY
+          python << 'PYEOF'
+          import os, re
+          from pathlib import Path
+
+          vault_path = Path('.')
+          exclude_dirs = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode', 'templates', 'maintenance'}
+          fixes = []
+          tag_re = re.compile(r'(^|\s)#([a-zA-Z][a-zA-Z0-9_/-]*)')
+
+          for f in vault_path.rglob('*.md'):
+              if any(part in exclude_dirs for part in f.parts):
+                  continue
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  body_start = 0
+                  if content.startswith('---'):
+                      end = content.find('---', 3)
+                      if end != -1:
+                          body_start = end + 3
+                  body = content[body_start:]
+                  lines = body.split('\n')
+                  in_code = False
+                  new_lines = []
+                  fixes_before = len(fixes)
+                  for line in lines:
+                      if line.strip().startswith('```'):
+                          in_code = not in_code
+                      if not in_code:
+                          # Strip inline code spans before tag matching
+                          stripped = re.sub(r'`[^`]+`', '', line)
+                          def fix_tag(m):
+                              prefix = m.group(1)
+                              tag = m.group(2)
+                              # Skip hex color codes (e.g., #FF8C00, #FFF)
+                              if re.match(r'^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$', tag):
+                                  return m.group(0)
+                              # Skip if this tag only appears inside inline code
+                              if f'#{tag}' not in stripped:
+                                  return m.group(0)
+                              fixed = tag.lower().replace('_', '-')
+                              if fixed != tag:
+                                  fixes.append(f"{f}: #{tag} -> #{fixed}")
+                              return prefix + '#' + fixed
+                          line = tag_re.sub(fix_tag, line)
+                      new_lines.append(line)
+                  if len(fixes) > fixes_before:
+                      new_body = '\n'.join(new_lines)
+                      f.write_text(content[:body_start] + new_body, encoding='utf-8')
+              except Exception:
+                  pass
+
+          os.makedirs('/tmp', exist_ok=True)
+          with open('/tmp/vault-health-tag-fixes.txt', 'w') as out:
+              for fix in fixes:
+                  out.write(fix + '\n')
+              if not fixes:
+                  out.write('No tag fixes needed\n')
+          if fixes:
+              print(f"Fixed {len(fixes)} tags")
+              for fix in fixes[:20]:
+                  print(f"  {fix}")
+          else:
+              print("No tag fixes needed")
+          PYEOF
+
+      - name: Auto-fix missing frontmatter
+        run: |
+          echo "## Auto-Fix: Missing Frontmatter" >> $GITHUB_STEP_SUMMARY
+          python << 'PYEOF'
+          import os
+          from pathlib import Path
+          from datetime import date
+
+          vault_path = Path('.')
+          exclude_dirs = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode', 'templates'}
+          fixed_files = []
+          today = date.today().isoformat()
+
+          for f in vault_path.rglob('*.md'):
+              if any(part in exclude_dirs for part in f.parts):
+                  continue
+              if 'Projects/' not in str(f):
+                  continue
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  if not content.strip().startswith('---'):
+                      stub = f"---\nstatus: active\ncreated_date: {today}\nlast_updated: {today}\n---\n\n"
+                      f.write_text(stub + content, encoding='utf-8')
+                      fixed_files.append(str(f))
+              except Exception:
+                  pass
+
+          with open('/tmp/vault-health-frontmatter-fixes.txt', 'w') as out:
+              for fix in fixed_files:
+                  out.write(fix + '\n')
+              if not fixed_files:
+                  out.write('No frontmatter fixes needed\n')
+          if fixed_files:
+              print(f"Added frontmatter to {len(fixed_files)} files")
+              for fix in fixed_files[:20]:
+                  print(f"  {fix}")
+          else:
+              print("All project files have frontmatter")
+          PYEOF
+
+      - name: Detect broken wiki-links
+        run: |
+          echo "## Broken Wiki-Links" >> $GITHUB_STEP_SUMMARY
+          python << 'PYEOF'
+          import re
+          from pathlib import Path
+
+          vault_path = Path('.')
+          # Dirs excluded from the valid-targets index
+          targets_exclude = {'.git', '.obsidian', '.github', '.claude', 'node_modules', '.vscode'}
+          # Dirs excluded from scanning (don't check links FROM these)
+          scan_exclude = targets_exclude | {'templates', 'maintenance'}
+          md_stems = set()
+          for f in vault_path.rglob('*.md'):
+              if not any(part in targets_exclude for part in f.parts):
+                  stem = f.stem.lower()
+                  md_stems.add(stem)
+                  # Also index hyphen-to-space variant so [[Example Name]] matches jeff-schneider.md
+                  md_stems.add(stem.replace('-', ' '))
+                  # Parse aliases from YAML frontmatter
+                  try:
+                      text = f.read_text(encoding='utf-8')
+                      if text.startswith('---'):
+                          end = text.find('---', 3)
+                          if end != -1:
+                              fm = text[3:end]
+                              # Match aliases: ["Alias One", "Alias Two"] or aliases: [Alias One]
+                              alias_match = re.search(r'aliases:\s*\[([^\]]*)\]', fm)
+                              if alias_match:
+                                  raw = alias_match.group(1)
+                                  for alias in raw.split(','):
+                                      alias = alias.strip().strip('"').strip("'").lower()
+                                      if alias:
+                                          md_stems.add(alias)
+                  except Exception:
+                      pass
+
+          link_re = re.compile(r'\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]')
+          non_md_exts = ('.webm', '.jpg', '.jpeg', '.png', '.gif', '.docx', '.pdf', '.pptx', '.xlsx')
+          # Known non-file targets: plugins, placeholders, vault owner
+          known_non_files = {'scribe', 'filename', 'person 1', 'person 2', 'person 3', 'your name'}
+          broken = []
+          for f in vault_path.rglob('*.md'):
+              if any(part in scan_exclude for part in f.parts):
+                  continue
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  for m in link_re.finditer(content):
+                      target_raw = m.group(1).strip()
+                      # Skip Templater syntax (resolves at render time)
+                      if '<%' in target_raw or '${' in target_raw:
+                          continue
+                      # Skip non-markdown file links (recordings, images, docs)
+                      if any(target_raw.lower().endswith(ext) for ext in non_md_exts):
+                          continue
+                      # Strip trailing backslash before resolving
+                      target = target_raw.rstrip('\\').split('/')[-1].lower()
+                      if target and target not in md_stems and target not in known_non_files:
+                          broken.append(f"{f}: [[{target_raw}]]")
+              except Exception:
+                  pass
+
+          with open('/tmp/vault-health-broken-links.txt', 'w') as out:
+              for b in broken:
+                  out.write(b + '\n')
+              if not broken:
+                  out.write('No broken links found\n')
+          if broken:
+              print(f"Found {len(broken)} broken wiki-links")
+              for b in broken[:20]:
+                  print(f"  {b}")
+          else:
+              print("No broken wiki-links found")
+          PYEOF
+
+      - name: Detect stale project briefs
+        run: |
+          echo "## Stale Project Briefs" >> $GITHUB_STEP_SUMMARY
+          python << 'PYEOF'
+          import re
+          from pathlib import Path
+          from datetime import datetime, timedelta
+
+          stale = []
+          threshold = datetime.now() - timedelta(days=30)
+
+          for f in Path('.').glob('Projects/Clients/*/*/project-brief.md'):
+              try:
+                  content = f.read_text(encoding='utf-8')
+                  if content.startswith('---'):
+                      end = content.find('---', 3)
+                      if end != -1:
+                          fm = content[3:end]
+                          match = re.search(r'last_updated:\s*(\d{4}-\d{2}-\d{2})', fm)
+                          status_match = re.search(r'status:\s*(\w+)', fm)
+                          status = status_match.group(1) if status_match else 'unknown'
+                          if status in ('active', 'in-progress', 'unknown') and match:
+                              last_updated = datetime.strptime(match.group(1), '%Y-%m-%d')
+                              if last_updated < threshold:
+                                  days = (datetime.now() - last_updated).days
+                                  stale.append(f"{f} ({days} days stale, status: {status})")
+              except Exception:
+                  pass
+
+          with open('/tmp/vault-health-stale-briefs.txt', 'w') as out:
+              for s in stale:
+                  out.write(s + '\n')
+              if not stale:
+                  out.write('No stale briefs found\n')
+          if stale:
+              print(f"Found {len(stale)} stale project briefs")
+              for s in stale:
+                  print(f"  {s}")
+          else:
+              print("All active project briefs are current")
+          PYEOF
+
+      - name: Generate maintenance report
+        run: |
+          echo "## Maintenance Report" >> $GITHUB_STEP_SUMMARY
+          python << 'PYEOF'
+          import os
+          from pathlib import Path
+          from datetime import date
+
+          today = date.today().isoformat()
+
+          def read_results(path):
+              try:
+                  lines = Path(path).read_text().strip().split('\n')
+                  return [l for l in lines if l.strip()]
+              except:
+                  return []
+
+          tag_fixes = read_results('/tmp/vault-health-tag-fixes.txt')
+          fm_fixes = read_results('/tmp/vault-health-frontmatter-fixes.txt')
+          broken_links = read_results('/tmp/vault-health-broken-links.txt')
+          stale_briefs = read_results('/tmp/vault-health-stale-briefs.txt')
+
+          def count(items):
+              return 0 if (len(items) == 1 and 'No' in items[0]) else len(items)
+
+          tag_count = count(tag_fixes)
+          fm_count = count(fm_fixes)
+          link_count = count(broken_links)
+          brief_count = count(stale_briefs)
+
+          report = f"""---
+          tags:
+            - "#system"
+            - "#automation"
+          status: unreviewed
+          date: {today}
+          generated_by: vault-maintenance-bot
+          ---
+
+          # Vault Maintenance Report - {today}
+
+          Generated automatically by GitHub Actions vault health workflow.
+
+          ## Auto-Fixes Applied
+
+          ### Tag Casing ({tag_count} fixed)
+          """
+          if tag_count > 0:
+              for fix in tag_fixes:
+                  report += f"- {fix}\n"
+          else:
+              report += "No tag fixes needed.\n"
+
+          report += f"\n### Missing Frontmatter ({fm_count} fixed)\n"
+          if fm_count > 0:
+              for fix in fm_fixes:
+                  report += f"- Added frontmatter stub: `{fix}`\n"
+          else:
+              report += "All project files have frontmatter.\n"
+
+          report += f"\n## Items for Review\n\n### Broken Wiki-Links ({link_count} found)\n"
+          if link_count > 0:
+              for link in broken_links:
+                  report += f"- [ ] {link}\n"
+          else:
+              report += "No broken wiki-links found.\n"
+
+          report += f"\n### Stale Project Briefs ({brief_count} found)\n"
+          if brief_count > 0:
+              for brief in stale_briefs:
+                  report += f"- [ ] {brief}\n"
+          else:
+              report += "All active project briefs are current.\n"
+
+          report += f"""
+          ## Summary
+
+          | Category | Count | Action |
+          |----------|-------|--------|
+          | Tag fixes | {tag_count} | Auto-fixed |
+          | Frontmatter stubs | {fm_count} | Auto-fixed |
+          | Broken wiki-links | {link_count} | Manual review needed |
+          | Stale project briefs | {brief_count} | Manual review needed |
+
+          ---
+          *Generated by vault-maintenance[bot] at {today}*
+          """
+
+          # Clean up indentation from heredoc
+          import textwrap
+          report = textwrap.dedent(report)
+
+          os.makedirs('logs/maintenance', exist_ok=True)
+          report_path = f'logs/maintenance/{today}-maintenance.md'
+          Path(report_path).write_text(report, encoding='utf-8')
+          print(f"Report written to {report_path}")
+          print(f"Summary: {tag_count} tag fixes, {fm_count} frontmatter fixes, {link_count} broken links, {brief_count} stale briefs")
+          PYEOF
+
+      - name: Commit auto-fixes and report
+        run: |
+          git config user.name "vault-maintenance[bot]"
+          git config user.email "vault-maintenance[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: automated vault maintenance
+
+          Auto-fixes applied and health report generated.
+
+          Co-Authored-By: vault-maintenance[bot] <vault-maintenance[bot]@users.noreply.github.com>"
+            git push
+          fi
+
+      - name: Generate health report
+        run: |
+          echo "## Health Check Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Ran at: $(date -u)" >> $GITHUB_STEP_SUMMARY

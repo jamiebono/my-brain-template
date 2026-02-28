@@ -1,0 +1,83 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  pr-checks:
+    name: Pull Request Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for sensitive data
+        run: |
+          echo "Scanning for potential sensitive data..."
+
+          # Check for common patterns that might indicate secrets
+          patterns=(
+            "password.*=.*['\"].*['\"]"
+            "api[_-]?key.*=.*['\"].*['\"]"
+            "secret.*=.*['\"].*['\"]"
+            "token.*=.*['\"].*['\"]"
+            "BEGIN.*PRIVATE KEY"
+          )
+
+          found_issues=0
+          for pattern in "${patterns[@]}"; do
+            if git diff origin/main... | grep -iE "$pattern"; then
+              echo "⚠️  Potential sensitive data found matching pattern: $pattern"
+              found_issues=1
+            fi
+          done
+
+          if [ $found_issues -eq 0 ]; then
+            echo "✅ No obvious sensitive data patterns found"
+          else
+            echo "⚠️  Please review the above matches to ensure no secrets are being committed"
+            echo "Note: This is a basic check and may have false positives"
+          fi
+
+      - name: Validate file naming conventions
+        run: |
+          echo "Checking file naming conventions..."
+
+          # Check for files with spaces in names (should use hyphens)
+          files_with_spaces=$(find . -type f -name "* *" -not -path "./.git/*" -not -path "./Assets/*" | wc -l)
+
+          if [ $files_with_spaces -eq 0 ]; then
+            echo "✅ All files follow naming conventions (no spaces)"
+          else
+            echo "⚠️  Found $files_with_spaces files with spaces in names:"
+            find . -type f -name "* *" -not -path "./.git/*" -not -path "./Assets/*"
+            echo "Consider using hyphens instead of spaces for consistency"
+          fi
+
+      - name: Check for broken wiki links
+        run: |
+          echo "Checking for potential broken wiki-style links..."
+
+          # This is a basic check - just ensures [[ ]] links don't have obvious issues
+          broken_links=$(grep -r "\[\[\]\]" --include="*.md" . | wc -l)
+
+          if [ $broken_links -eq 0 ]; then
+            echo "✅ No empty wiki-style links found"
+          else
+            echo "⚠️  Found $broken_links empty wiki-style links [[]]"
+            grep -rn "\[\[\]\]" --include="*.md" .
+          fi
+
+      - name: Summary
+        run: |
+          echo "================================================"
+          echo "PR Validation Complete"
+          echo "================================================"
+          echo "This automated check helps maintain quality."
+          echo "Please review any warnings above before merging."

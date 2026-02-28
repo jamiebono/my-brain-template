@@ -1,0 +1,253 @@
+<%*
+// ═══════════════════════════════════════════════════════════════════════════
+// 👤 PERSON / CONTACT TEMPLATE
+// ═══════════════════════════════════════════════════════════════════════════
+// Dedicated page for important contacts with rich relationship context
+// ═══════════════════════════════════════════════════════════════════════════
+
+const fullName = await tp.system.prompt("Full Name:", "");
+const company = await tp.system.prompt("Company/Organization:", "");
+const role = await tp.system.prompt("Role/Title:", "");
+const email = await tp.system.prompt("Email:", "");
+const phone = await tp.system.prompt("Phone (optional):", "");
+const linkedIn = await tp.system.prompt("LinkedIn URL (optional):", "");
+const howMet = await tp.system.prompt("How did you meet?:", "");
+const relationshipType = await tp.system.suggester(
+    ["Client Contact", "Colleague", "Vendor/Partner", "Mentor/Advisor", "Industry Connection", "Friend", "Other"],
+    ["client", "colleague", "vendor", "mentor", "industry", "friend", "other"]
+);
+
+const firstName = fullName.split(' ')[0];
+const safeName = fullName.replace(/\s+/g, '-');
+const safeCompany = company.toLowerCase().replace(/\s+/g, '-');
+const today = tp.date.now("YYYY-MM-DD");
+
+await tp.file.rename(safeName);
+-%>
+---
+tags:
+  - "#person"
+  - "#contact"
+  - "#<% relationshipType %>"
+<% if (company) { %>  - "#<% safeCompany %>"
+<% } %>
+type: person
+name: <% fullName %>
+company: <% company %>
+role: <% role %>
+email: <% email %>
+<% if (phone) { %>phone: <% phone %>
+<% } %><% if (linkedIn) { %>linkedin: <% linkedIn %>
+<% } %>relationship_type: <% relationshipType %>
+met_date: <% today %>
+last_contact: <% today %>
+warmth: 🟡
+status: active
+created: <% tp.date.now("YYYY-MM-DD HH:mm") %>
+---
+
+# 👤 <% fullName %>
+
+> [!info] Contact Card
+> **Role:** <% role %> @ <% company %>  
+> **Email:** [<% email %>](mailto:<% email %>)  
+<% if (phone) { %>> **Phone:** <% phone %>  
+<% } %><% if (linkedIn) { %>> **LinkedIn:** [Profile](<% linkedIn %>)  
+<% } %>> **Relationship:** <% relationshipType.charAt(0).toUpperCase() + relationshipType.slice(1) %>
+
+<% if (company) { %>
+**See also:** [[Projects/Clients/<% company %>/client-overview|<% company %>]], [[network]], [[outreach]]
+<% } else { %>
+**See also:** [[network]], [[outreach]]
+<% } %>
+
+---
+
+## 🎯 Quick Context
+
+> [!tip] Who is <% firstName %> and why do they matter?
+
+**One-liner:** 
+
+**How we met:** <% howMet %>
+
+**What they care about:** 
+
+---
+
+## 🌡️ Relationship Status
+
+```meta-bind
+INPUT[inlineSelect(option(🟢 Warm/Active), option(🟡 Moderate), option(🔵 Cool/Dormant), option(⭐ Champion)):warmth]
+```
+
+| Dimension | Status |
+|:----------|:------:|
+| Trust Level | ⭐⭐⭐⭐⭐ |
+| Engagement | ⭐⭐⭐⭐⭐ |
+| Reciprocity | ⭐⭐⭐⭐⭐ |
+| Potential | ⭐⭐⭐⭐⭐ |
+
+---
+
+## 💬 Interaction History
+
+### Recent Touchpoints
+
+| Date | Type | Topic | Notes |
+|:-----|:-----|:------|:------|
+| <% today %> | First Contact | <% howMet %> |  |
+
+### All Interactions
+
+```dataview
+TABLE WITHOUT ID
+  file.link as "Note",
+  date as "Date",
+  type as "Type"
+FROM ""
+WHERE contains(attendees, "<% fullName %>") OR contains(file.content, "<% fullName %>")
+SORT date DESC
+LIMIT 10
+```
+
+---
+
+## 🧠 What I Know About <% firstName %>
+
+### Professional
+
+**Current Focus/Projects:**
+- 
+
+**Skills/Expertise:**
+- 
+
+**Career Goals:**
+- 
+
+### Personal
+
+**Interests/Hobbies:**
+- 
+
+**Family/Life Context:**
+- 
+
+**Communication Style:**
+- 
+
+---
+
+## 💡 Value Exchange
+
+### How I Can Help Them
+
+- [ ] 
+
+### How They Can Help Me
+
+- [ ] 
+
+### Mutual Interests
+
+- 
+
+---
+
+## 🎯 Engagement Strategy
+
+### Next Best Action
+
+**What:** 
+
+**When:** 
+
+**Why:** 
+
+### Conversation Starters
+
+- 
+- 
+- 
+
+### Topics to Avoid
+
+- 
+
+---
+
+## 🔗 Their Network
+
+### People They've Introduced Me To
+
+| Name | Context | Date |
+|:-----|:--------|:-----|
+|  |  |  |
+
+### People I Should Ask About
+
+| Name | Why | Asked? |
+|:-----|:----|:------:|
+|  |  | ⬜ |
+
+---
+
+## 📝 Notes & Observations
+
+### Key Insights
+
+> Things to remember about <% firstName %>
+
+
+### Meeting Notes
+
+> Quick captures from conversations
+
+
+---
+
+## 📎 Resources
+
+### Their Content
+
+- 
+
+### Shared Resources
+
+- 
+
+---
+
+## ✅ Actions
+
+### Open Tasks
+
+- [ ] 
+
+### Follow-up Reminders
+
+- [ ] 
+
+---
+
+**First Connected:** <% today %>
+**Last Contact:** <% today %>
+**Next Reach Out:** <% moment().add(2, 'weeks').format("YYYY-MM-DD") %>
+
+```button
+name 📧 Draft Outreach
+type command
+action Templater: Insert templates/snippets/draft-outreach.md
+```
+
+```button
+name 📅 Schedule Follow-up
+type command
+action Templater: Insert templates/snippets/schedule-followup.md
+```
+
+[//begin]: # "Autogenerated link references for markdown compatibility"
+[network]: network.md "Network"
+[outreach]: outreach.md "Outreach"
+[//end]: # "Autogenerated link references"

@@ -1,0 +1,60 @@
+# your organization Quarto Project Configuration
+# This defines default settings for all documents in this project
+
+project:
+  type: default
+  output-dir: _output
+  resources:
+    - assets/**
+
+# Mermaid diagram configuration (applies to all formats)
+mermaid:
+  theme: neutral
+
+# Default format settings
+format:
+  # Typst-based PDF (no TeX required, native Mermaid support)
+  pdf:
+    pdf-engine: typst
+    papersize: us-letter
+    margin:
+      x: 1in
+      y: 1in
+    mainfont: "Calibri"
+    fontsize: 11pt
+    toc: true
+    toc-depth: 3
+    number-sections: true
+
+  html:
+    theme:
+      - default
+      - themes/brand-theme.scss
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    # Mermaid: Quarto's built-in {mermaid} handler embeds the library automatically.
+    # Do NOT add CDN mermaid scripts -- they conflict with the embedded renderer.
+
+  docx:
+    toc: false
+    # reference-doc: themes/brand-reference.docx  # Add custom template later
+
+  revealjs:
+    theme:
+      - default
+      - themes/brand-theme.scss
+    logo: assets/logo.png
+    footer: "Your Organization"
+    transition: fade
+    slide-number: true
+
+# Metadata defaults
+author: "Your Organization"
+date: today
+date-format: "MMMM D, YYYY"
+
+# Execute code blocks (if any)
+execute:
+  echo: false
+  warning: false

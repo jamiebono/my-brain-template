@@ -1,0 +1,678 @@
+---
+tags:
+- '#documentation'
+- '#readme'
+- '#setup-guide'
+- '#documentation'
+status: active
+created_date: 2025-11-12
+last_updated: 2025-11-26
+permalink: readme
+---
+
+# My Brain 🧠
+
+> An AI-augmented personal operating system built on Obsidian and Claude Code. Structured markdown files serve as a single source of truth for AI agents to read, analyze, and act upon.
+
+**My Brain** is a knowledge management and productivity system that combines the power of **Obsidian** (a markdown-based knowledge management tool) with **Claude Code** (an AI assistant with file system access) to create a "second brain" that actively helps manage consulting projects, strategic planning, task tracking, professional networking, and client relationship management.
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Core Philosophy](#core-philosophy)
+3. [Getting Started](#getting-started)
+4. [Directory Structure](#directory-structure)
+5. [Key Files](#key-files)
+6. [Slash Commands](#slash-commands)
+7. [AI Agents](#ai-agents)
+8. [Template System](#template-system)
+9. [Obsidian Integration](#obsidian-integration)
+10. [Document Conventions](#document-conventions)
+11. [VSCode & Git Integration](#vscode--git-integration)
+12. [MCP Configuration](#mcp-configuration)
+13. [Workflows](#workflows)
+14. [Customization Guide](#customization-guide)
+15. [Troubleshooting](#troubleshooting)
+
+---
+
+## Overview
+
+My Brain implements the **"Feed the Beast"** pattern—a methodology where structured text files become the foundation for AI-assisted workflows. Rather than keeping information siloed in your head or scattered across apps, everything lives in markdown files that AI agents can read, cross-reference, and use to provide intelligent recommendations.
+
+### What It Does
+
+| Capability | Description |
+|------------|-------------|
+| **Strategic Planning** | Daily and weekly reviews with prioritization and pattern recognition |
+| **Task Management** | Central task tracking integrated with roadmap milestones |
+| **Project Management** | Hierarchical client/project structure with standardized documentation |
+| **Network Management** | Professional contact tracking with relationship context |
+| **Outreach Assistance** | AI-assisted message drafting and communication strategy |
+| **Knowledge Capture** | Meeting notes, transcripts, and documentation templates |
+| **Git Operations** | Automated commits with intelligent message generation |
+
+### Technology Stack
+
+- **Obsidian** — Visual markdown editor with linking, plugins, and graph visualization
+- **Claude Code** — AI assistant with file system access for reading/editing documents
+- **Git/GitHub** — Version control with automatic commits via GitDoc
+- **VSCode** — Code editor (optional, for power users and MCP integration)
+
+---
+
+## Core Philosophy
+
+### The "Feed the Beast" Pattern
+
+1. **Single Source of Truth**: All critical information lives in markdown files—not in your head, not in scattered apps
+2. **Structured for AI**: Files use consistent formatting, YAML frontmatter, and wiki-links so AI agents can parse and understand context
+3. **Action-Oriented**: Every review, every analysis leads to concrete next steps
+4. **Context-Aware**: AI agents read across multiple files to understand the full picture before providing recommendations
+5. **Human-First**: AI removes friction but doesn't replace decision-making—you remain in control
+
+### Design Principles
+
+- **Progressive Disclosure**: Important info first, details available when needed
+- **Visual Hierarchy**: Emojis, callouts, and formatting for scannability
+- **Actionable Structure**: Clear action items, decisions, and follow-ups
+- **Context Preservation**: Rich metadata for future reference
+- **Integration Ready**: DataView queries, Smart Connections, Calendar integration
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+1. **Obsidian** — [Download](https://obsidian.md) (free)
+2. **Claude Code** — [Subscribe](https://claude.ai/claude-code) ($20/month minimum)
+3. **Git** — For version control ([Download](https://git-scm.com))
+
+### Initial Setup
+
+1. Clone or download this repository to your local machine
+2. Open the folder in Obsidian as a vault
+3. Enable community plugins in Obsidian (Settings → Community plugins → Turn on)
+4. Install recommended plugins (see [Obsidian Integration](#obsidian-integration))
+5. Open a terminal in the repository folder
+6. Run `claude` to start Claude Code
+7. Test with `/daily` to generate your first strategic brief
+
+### First Steps
+
+1. Review `CLAUDE.md` — This file tells Claude about the repository structure
+2. Update `todo.md` — Add your current tasks and priorities
+3. Update `roadmap.md` — Add your milestones and deadlines
+4. Populate `network.md` — Add key professional contacts
+5. Run `/daily` — Get your first AI-generated strategic brief
+
+---
+
+## Directory Structure
+
+```
+my-brain/
+├── .claude/
+│   ├── agents/                    # AI agent definitions
+│   │   ├── strategic-advisor.md
+│   │   ├── meeting-maestro.md
+│   │   ├── relationship-manager.md
+│   │   ├── vault-organizer.md
+│   │   ├── editorial-agent.md
+│   │   └── pragmatist-agent.md
+│   ├── commands/                  # Slash commands
+│   │   ├── daily.md
+│   │   ├── weekly.md
+│   │   ├── network.md
+│   │   ├── outreach.md
+│   │   ├── push.md
+│   │   └── administrator.md
+│   └── settings.local.json        # Claude Code permissions
+├── .vscode/
+│   └── mcp.json                   # MCP server configuration
+├── Projects/
+│   ├── Clients/                   # Client project hierarchy
+│   │   └── [Client-Name]/
+│   │       ├── client-overview.md
+│   │       └── [project-name]/
+│   │           ├── project-brief.md
+│   │           └── YYYY-MM-DD-*.md
+│   └── Internal/                  # Internal projects
+├── templates/                     # Obsidian Templater templates
+│   ├── snippets/                  # Reusable template fragments
+│   ├── tpl-daily-brief.md
+│   ├── tpl-weekly-review.md
+│   ├── tpl-meeting.md
+│   └── ... (other templates)
+├── logs/
+│   ├── daily/                     # Daily briefs (YYYY-MM-DD-daily-brief.md)
+│   ├── weekly/                    # Weekly reviews (YYYY-WW.md)
+│   └── quarterly/                 # Quarterly reviews
+├── Transcripts/                   # Meeting transcripts
+├── Recordings/                    # Audio/video recordings
+├── Excalidraw/                    # Visual diagrams
+├── todo.md                        # Central task tracking
+├── roadmap.md                     # Strategic milestones
+├── network.md                     # Professional contacts
+├── outreach.md                    # Outreach tracking
+├── CLAUDE.md                      # AI context file
+└── README.md                      # This file
+```
+
+---
+
+## Key Files
+
+| File | Purpose | Update Frequency |
+|------|---------|------------------|
+| `todo.md` | Daily task tracking with checkboxes | Daily |
+| `roadmap.md` | Strategic milestones and quarterly planning | Weekly |
+| `network.md` | Professional contacts with context | As contacts are made |
+| `outreach.md` | Message drafts and follow-up tracking | As needed |
+| `CLAUDE.md` | Context file telling AI about the repository | When structure changes |
+
+### todo.md Structure
+
+```markdown
+## 🔥 Today's Priority
+- [ ] Most important task
+- [ ] Second priority
+
+## 📋 In Progress
+- [ ] Active work items
+
+## 📋 On Deck
+- [ ] Coming up next
+
+## 💡 Someday/Maybe
+- [ ] Ideas and future items
+```
+
+### network.md Structure
+
+```markdown
+## Person Name
+Role @ Company
+Email: email@example.com
+Last: YYYY-MM-DD - Context of last interaction
+Notes: Relationship context, what they're working on, how you can help each other
+```
+
+---
+
+## Slash Commands
+
+Slash commands are AI prompts that execute specific workflows. Run them by typing the command in Claude Code.
+
+| Command | Purpose | When to Use |
+|---------|---------|-------------|
+| `/daily` | Generate strategic daily brief | Start of each day |
+| `/weekly` | Comprehensive weekly review | End of week (Friday/Sunday) |
+| `/network` | Search contacts for current needs | When you need help from your network |
+| `/outreach` | Draft outreach messages | When reaching out to contacts |
+| `/push` | Auto-commit and push changes | After making updates |
+| `/administrator` | Full chief-of-staff review | When you need comprehensive support |
+
+### /daily
+
+The daily command reads your `todo.md`, `roadmap.md`, calendar events, and recent activity to produce:
+- Today's calendar overview
+- State of affairs summary
+- Key opportunities
+- Blockers and friction points
+- ONE THING: Your single highest-leverage action
+- Today's prioritized action list
+
+### /weekly
+
+A multi-phase strategic review:
+1. **Mechanical Review**: Git changes, task completion, deadline tracking
+2. **Emotional Reality Check**: What's causing unease? What brought energy?
+3. **Constraint Analysis**: Money, time, energy, reputation assessment
+4. **Finding Unlocks**: Collaboration opportunities, reframing
+5. **Energy-Aware Priorities**: Next week's priorities with energy management
+6. **Evolution Tracking**: Patterns and insights
+7. **Outputs**: Updates to `roadmap.md`, `todo.md`, and weekly log
+
+### /network
+
+Searches your professional network based on current priorities:
+1. Reads `todo.md` and `roadmap.md` to understand needs
+2. Updates `network.md` with new contacts from emails/calendar
+3. Returns tiered matches (Perfect, Strong, Potential)
+
+### /outreach
+
+Assists with outreach strategy and message drafting:
+- Reviews priorities and network
+- Suggests who to reach out to
+- Drafts message notes (not full emails unless requested)
+- Follows effective outreach principles
+
+### /push
+
+Automated git workflow:
+1. Checks `git status` and `git diff`
+2. Generates descriptive commit message
+3. Stages all changes, commits, and pushes
+
+---
+
+## AI Agents
+
+Agents are specialized AI personas with defined capabilities and behaviors. They're defined in `.claude/agents/`.
+
+<!-- Customize: Give each agent a personality that motivates you! -->
+
+### Strategic Advisor (`strategic-advisor.md`)
+
+**Primary agent for daily operations.** Acts as a strategic partner who:
+- Conducts daily and weekly reviews
+- Manages network and relationships
+- Drafts outreach messages
+- Coordinates other agents
+- Executes git operations
+
+### Meeting Maestro (`meeting-maestro.md`)
+
+**Meeting lifecycle specialist.** Handles:
+- Meeting prep and context gathering
+- Transcript processing
+- Action item extraction
+- Meeting note completion
+
+### Relationship Manager (`relationship-manager.md`)
+
+**Network and contact specialist.** Manages:
+- Contact research and profiling
+- Company and individual OSINT
+- Meeting preparation
+- Project onboarding
+- Network maintenance
+
+### Vault Organizer (`vault-organizer.md`)
+
+**Vault maintenance specialist.** Handles:
+- Directory structure organization
+- Tag standardization
+- Backlink creation and maintenance
+- Frontmatter consistency
+
+### Editorial Agent (`editorial-agent.md`)
+
+**Writing review specialist.** Provides:
+- Grammar and clarity review
+- Tone adjustment
+- Proofreading client-facing communications
+
+### Pragmatist (`pragmatist-agent.md`)
+
+**Anti-perfectionism agent.** Delivers:
+- Reality checks on scope creep
+- Decision paralysis breaking
+- Over-engineering detection
+
+---
+
+## Template System
+
+Templates live in `templates/` and use Obsidian's Templater plugin syntax.
+
+### Core Templates
+
+| Template | Purpose | Output Location |
+|----------|---------|-----------------|
+| `tpl-daily-brief` | Daily strategic planning | `logs/daily/` |
+| `tpl-weekly-review` | 7-phase weekly reflection | `logs/weekly/` |
+| `tpl-quarterly-review` | Strategic quarterly planning | `logs/quarterly/` |
+| `tpl-meeting` | General meeting capture | Project folder |
+| `tpl-discovery-session` | Client discovery calls | Client project folder |
+| `tpl-1on1` | 1:1 meetings | Appropriate folder |
+| `tpl-client-overview` | New client setup | `Projects/Clients/[Client]/` |
+| `tpl-project-brief` | New project setup | Project folder |
+| `tpl-person` | Important contact profiles | Root or People folder |
+
+### Snippets
+
+Quick-insert fragments in `templates/snippets/`:
+- `update-timestamp` — Update "Last Updated" field
+- `quick-action` — Insert action item
+- `quick-meeting-capture` — Rapid meeting notes
+- `standup` — Daily standup format
+- `time-entry` — Billable time tracking
+- `decision-log-entry` — Document decisions
+- `risk-issue-entry` — Track risks/issues
+- `callout` — Styled callout blocks
+
+### Template Features
+
+- **Smart Date Handling**: Automatic date generation and navigation links
+- **Meta Bind Integration**: Interactive sliders, toggles, and inputs
+- **Buttons Plugin**: Action buttons for common operations
+- **Automatic Linking**: Wiki-links to related documents
+
+### Using Templates
+
+1. **Command Palette**: `Ctrl/Cmd + P` → "Templater: Insert template"
+2. **Calendar Click**: Click a date to auto-create daily brief
+3. **Hotkeys**: Configure in Settings → Hotkeys
+
+---
+
+## Obsidian Integration
+
+### Required Plugins
+
+| Plugin | Purpose |
+|--------|---------|
+| **Templater** | Advanced template system |
+| **Calendar** | Date navigation and daily note creation |
+| **Dataview** | Query and display data from notes |
+
+### Recommended Plugins
+
+| Plugin | Purpose |
+|--------|---------|
+| **Smart Connections** | AI-powered semantic search |
+| **Meta Bind** | Interactive form elements |
+| **Buttons** | Clickable action buttons |
+| **Excalidraw** | Visual diagramming |
+| **Mermaid Tools** | Diagram creation |
+
+### Plugin Configuration
+
+**Templater Settings:**
+- Template folder location: `templates`
+- Trigger on new file creation: Enabled
+
+**Daily Notes Settings:**
+- Date format: `YYYY-MM-DD-[daily-brief]`
+- New file location: `logs/daily`
+- Template file: `templates/tpl-daily-brief`
+
+**Calendar Plugin:**
+- Uses core Daily Notes configuration
+- Show week numbers: Enabled (for weekly review links)
+
+---
+
+## Document Conventions
+
+### YAML Frontmatter
+
+All documents should include:
+
+```yaml
+---
+tags:
+  - "#tag-name"
+client: Client Name          # For client work
+project: project-name        # For project work
+status: active|planned|completed
+created_date: YYYY-MM-DD
+last_updated: YYYY-MM-DD
+---
+```
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Client Folders | Title-Case-With-Hyphens | `Acme-Corp/` |
+| Project Folders | lowercase-with-hyphens | `data-platform-migration/` |
+| Files | lowercase-with-hyphens | `project-brief.md` |
+| Dated Files | YYYY-MM-DD prefix | `2025-11-25-meeting-notes.md` |
+| Tags | lowercase with hyphens | `#project-management` |
+
+### Semantic Filenames
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Client Overview | `client-overview.md` | `client-overview.md` |
+| Project Brief | `project-brief.md` | `project-brief.md` |
+| Meeting Notes | `YYYY-MM-DD-[title].md` | `2025-11-25-sow-review.md` |
+| Deliverables | `YYYY-MM-DD-[name].md` | `2025-11-20-architecture.md` |
+
+### Linking
+
+Use Obsidian wiki-style links: `[[filename]]` or `[[filename|display text]]`
+
+Add backlinks at the top of documents:
+```markdown
+**See also:** [[todo]], [[roadmap]], [[project-overview]]
+```
+
+### Footer
+
+Include at the bottom of every document:
+```markdown
+---
+
+**Created:** YYYY-MM-DD
+**Last Updated:** YYYY-MM-DD
+```
+
+### Common Tags
+
+`#meetings` `#consulting` `#todos` `#projects` `#notes` `#weekly-review` `#daily-brief`
+
+---
+
+## VSCode & Git Integration
+
+### GitDoc Auto-Commit
+
+The workspace is configured with GitDoc for automatic version control:
+- Commits on save
+- Smart commit enabled
+- Auto-sync after commit
+
+**Workspace Settings (`my-brain.code-workspace`):**
+```json
+{
+  "settings": {
+    "gitdoc.enabled": true,
+    "git.enableSmartCommit": true,
+    "git.postCommitCommand": "sync"
+  }
+}
+```
+
+### Claude Code Permissions
+
+Local permissions are configured in `.claude/settings.local.json`:
+- Allowed slash commands
+- Permitted git operations
+- MCP server access
+- Web search capability
+
+---
+
+## MCP Configuration
+
+Model Context Protocol (MCP) servers extend Claude's capabilities. Configure in `.vscode/mcp.json`.
+
+### Available Integrations
+
+| Integration | Purpose |
+|-------------|---------|
+| Asana | Task management sync |
+| Obsidian MCP | Direct vault access |
+| Calendar | Calendar integration |
+| Email | Email context |
+
+### Current Configuration
+
+The MCP configuration is available for custom server definitions. Add servers as needed:
+
+```json
+{
+  "servers": {
+    "server-name": {
+      "command": "...",
+      "args": ["..."]
+    }
+  }
+}
+```
+
+---
+
+## Workflows
+
+### Daily Workflow
+
+```
+Morning:
+1. Open Obsidian
+2. Run `/daily` in Claude Code
+3. Review calendar and priorities
+4. Set your ONE THING
+
+Throughout Day:
+5. Check off tasks in todo.md
+6. Capture meeting notes using templates
+7. Update relevant project briefs
+
+End of Day:
+8. Run `/push` to commit changes
+9. Preview tomorrow's calendar
+```
+
+### Weekly Workflow
+
+```
+Friday/Sunday:
+1. Run `/weekly` in Claude Code
+2. Complete all 7 phases of review
+3. Update roadmap.md with new milestones
+4. Add next week's priorities to todo.md
+5. Create weekly log in logs/weekly/
+6. Run `/push` to commit changes
+```
+
+### Meeting Workflow
+
+```
+Before Meeting:
+1. Create note from tpl-meeting template
+2. Set objectives and agenda
+
+During Meeting:
+3. Capture notes, decisions, action items
+
+After Meeting:
+4. Summarize key decisions
+5. Extract action items to todo.md
+6. Send follow-up if needed
+7. Run `/push` to save
+```
+
+### New Client Workflow
+
+```
+1. Create client folder: Projects/Clients/[Client-Name]/
+2. Create client-overview.md from template
+3. Research client using relationship manager agent
+4. Create project subfolder
+5. Create project-brief.md from template
+6. Add key contacts to network.md
+7. Update roadmap.md with milestones
+```
+
+---
+
+## Customization Guide
+
+### Adding New Commands
+
+1. Create a new `.md` file in `.claude/commands/`
+2. Define the command behavior and output format
+3. Reference relevant files to read
+4. Specify expected outputs
+
+### Creating New Templates
+
+1. Add file to `templates/` with `tpl-` prefix
+2. Include Templater logic block at top
+3. Add standard YAML frontmatter
+4. Include navigation and backlinks
+5. Document in `templates/README.md`
+
+### Modifying Agent Behavior
+
+1. Edit the agent file in `.claude/agents/`
+2. Adjust capabilities, output formats, or personality
+3. Update the description for proper invocation
+
+### Extending the System
+
+- **New project types**: Add templates and folder structures
+- **New integrations**: Configure MCP servers
+- **New workflows**: Create slash commands
+- **New agents**: Define specialized personas
+
+---
+
+## Troubleshooting
+
+### Claude Code Issues
+
+| Issue | Solution |
+|-------|----------|
+| Commands not running | Check `.claude/commands/` exists and files are valid markdown |
+| Agent not invoked | Verify agent file has proper frontmatter with name and description |
+| Permission denied | Check `.claude/settings.local.json` for allowed operations |
+
+### Obsidian Issues
+
+| Issue | Solution |
+|-------|----------|
+| Templates not rendering | Verify Templater plugin enabled and folder path set |
+| Calendar not creating daily | Check Daily Notes plugin configuration |
+| Broken links | Run obsidian-janitor agent for link maintenance |
+
+### Git Issues
+
+| Issue | Solution |
+|-------|----------|
+| Push fails | Check SSH keys or authentication |
+| Conflicts | Resolve manually or use git commands |
+| GitDoc not auto-committing | Verify workspace settings |
+
+---
+
+## Contributing
+
+This is a personal productivity system, but the patterns and templates can be adapted for team use.
+
+### Sharing with Team Members
+
+1. Fork this repository
+2. Customize templates for team needs
+3. Remove personal content
+4. Document team-specific conventions
+5. Set up shared MCP integrations
+
+---
+
+## Credits
+
+Based on the ["Feed the Beast"](https://dtlarson.com/feed-the-beast) pattern by Derek Larson, significantly extended with AI agents, slash commands, and structured templates.
+
+---
+
+**See also:** [[todo]], [[roadmap]], [[network]], [[CLAUDE]]
+
+**Created:** 2025-11-12
+**Last Updated:** 2025-11-26
+**Template by:** [Jamie Bono](https://github.com/jamiebono)
+
+
+[todo]: todo.md "Todo"
+[roadmap]: roadmap.md "Roadmap"
+[network]: network.md "Network"
+[CLAUDE]: CLAUDE.md "CLAUDE"

@@ -1,0 +1,119 @@
+# --- OS Generated Files ---
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual Environments ---
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+utils/.venv/
+
+# --- VS Code ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+*.code-search
+
+# --- Claude Code ---
+tmpclaude-*
+nul
+
+# --- Obsidian ---
+# Entire .obsidian/ directory (plugins, workspace, cache, etc.)
+.obsidian/
+
+# --- Foam ---
+.foam/
+.foam/templates
+
+# --- Project Specific ---
+# Large media/binary files (GitHub limit is 100MB)
+Recordings/
+*.webm
+*.mp4
+*.mp3
+*.wav
+*.m4a
+*.mov
+*.avi
+
+# Magic Mic / Scribe recordings
+magic_mic_*.webm
+scribe-recording-*.webm
+
+# Automated imports
+Raindrop Import/
+
+# Smart Environment
+.smart-env
+
+# Personal/Private
+personal/
+# Large installer files
+*.deb
+
+/.quarto/
+**/*.quarto_ipynb
+
+# --- Email/Calendar Auto-Sync ---
+# These are auto-synced from Outlook and create git noise
+# Re-sync from source if needed; don't pollute git history
+email_and_calendar_context/
+
+# --- Quarto/Pandoc Build Artifacts ---
+# Generated outputs - source markdown is the truth
+**/_output/
+**/*_files/
+# Keep source .md, ignore rendered outputs in project folders
+Projects/**/*.html
+# Projects/**/*.pdf
+# But allow intentional deliverables like slide decks
+!Projects/**/*.marp.pptx
+
+# --- IDE/Editor Artifacts ---
+*.code-profile
+*.code-workspace

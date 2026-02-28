@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "basic-memory": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["basic-memory", "mcp"],
+      "description": "Cross-session memory — indexes your vault as source of truth"
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-filesystem"],
+      "description": "Enhanced file operations — batch reads, directory trees"
+    },
+    "markitdown": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["markitdown-mcp"],
+      "description": "Convert DOCX, PDF, PPTX to clean markdown"
+    }
+  }
+}

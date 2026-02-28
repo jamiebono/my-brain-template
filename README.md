@@ -99,15 +99,20 @@ My Brain implements the **"Feed the Beast"** pattern—a methodology where struc
 4. Install recommended plugins (see [Obsidian Integration](#obsidian-integration))
 5. Open a terminal in the repository folder
 6. Run `claude` to start Claude Code
-7. Test with `/daily` to generate your first strategic brief
+7. **Run `/setup` to personalize your vault** — walks you through name, organization, brand colors, and MCP configuration
+8. Test with `/daily` to generate your first strategic brief
+
+> **Without Claude Code?** Run `bash scripts/setup.sh` for interactive command-line setup. Use `--dry-run` to preview changes first.
 
 ### First Steps
 
-1. Review `CLAUDE.md` — This file tells Claude about the repository structure
-2. Update `todo.md` — Add your current tasks and priorities
-3. Update `roadmap.md` — Add your milestones and deadlines
-4. Populate `network.md` — Add key professional contacts
-5. Run `/daily` — Get your first AI-generated strategic brief
+After running `/setup`:
+
+1. Update `todo.md` — Add your current tasks and priorities
+2. Update `roadmap.md` — Add your milestones and deadlines
+3. Add contacts to `network/` — See `network/example-person.md` for the format
+4. Run `/daily` — Get your first AI-generated strategic brief
+5. Use `/personalize` anytime to adjust colors, agents, MCP servers, or branding
 
 ---
 

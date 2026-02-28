@@ -31,6 +31,8 @@ Key workflow patterns: `/daily` for strategic briefs, `/time` for time tracking,
 - `/digest` - "What did I miss?" catch-up summary for emails and calendar
 - `/proposal` - Proposal / SOW generator
 - `/retro` - Project retrospective
+- `/setup` - First-time vault personalization wizard (name, org, brand colors, MCP config)
+- `/personalize` - Update specific personalization settings (colors, agents, mcp, branding, identity)
 
 ## Skills (`.claude/skills/`)
 

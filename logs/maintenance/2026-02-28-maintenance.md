@@ -21,9 +21,10 @@ All project files have frontmatter.
 
 ## Items for Review
 
-### Broken Wiki-Links (2 found)
-- [ ] README.md: [[project-overview]]
+### Broken Wiki-Links (3 found)
 - [ ] CONTRIBUTING.md: [[like-this]]
+- [ ] Projects/Clients/Example-Corp/client-overview.md: [[Jane Smith]]
+- [ ] Projects/Clients/Example-Corp/client-overview.md: [[Bob Johnson]]
 
 ### Stale Project Briefs (0 found)
 All active project briefs are current.
@@ -34,7 +35,7 @@ All active project briefs are current.
 |----------|-------|--------|
 | Tag fixes | 0 | Auto-fixed |
 | Frontmatter stubs | 0 | Auto-fixed |
-| Broken wiki-links | 2 | Manual review needed |
+| Broken wiki-links | 3 | Manual review needed |
 | Stale project briefs | 0 | Manual review needed |
 
 ---
